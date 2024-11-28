@@ -3,7 +3,10 @@
 #include <unistd.h>
 
 void customerMenu(void);
+void customerLogin(void); // --> jarb
+
 void ownerMenu(void);
+void ownerLogin(void); // --> jarb
 
 int main()
 {
@@ -43,7 +46,9 @@ void customerMenu(void)
     int choice;
     
     // login
+    customerLogin();
 
+    // menu
     while (1)
     {
         printf("\n==You're in the Customer menu==\n");
@@ -55,10 +60,10 @@ void customerMenu(void)
 
         switch (choice) {
             case 1:
-                // viewProducts()
+                // viewProducts() --> Jarb
                 break;
             case 2:
-                // purchaseProducts()
+                // purchaseProducts() --> =(primary) & Jarb(automation)
                 break;
             case 0:
                 printf("Returning to main menu...\n");
@@ -76,8 +81,10 @@ void ownerMenu(void)
 {
     int choice;
 
-    //login
+    // login
+    ownerLogin();
 
+    // menu
     while (1)
     {
         printf("\n==You're in the Owner Menu==\n");
@@ -95,7 +102,7 @@ void ownerMenu(void)
                 // editProducts()
                 break;
             case 3:
-                // restock()
+                // restock() --> =(primary) & Jarb(automation)
                 break;
             case 4:
                 // editCoupons()
@@ -110,4 +117,16 @@ void ownerMenu(void)
                 break;
         }
     }
+}
+
+void customerLogin(void)
+{
+    // pull user's data
+
+    // decrypt SHA256
+}
+
+void ownerLogin(void)
+{
+
 }
