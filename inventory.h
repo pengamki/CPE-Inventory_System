@@ -15,6 +15,17 @@ struct Product {
     int stock;
 };
 
+struct User {
+    char username[50];
+    char password[50];
+    int isOwner;  // 1 for owner, 0 for customer
+};
+
+// Authentication functions
+int authenticateUser(const char* username, const char* password, int isOwner);
+void loadUsers();
+
+
 // !!Customer functions!!
 
 // View Products
@@ -24,8 +35,8 @@ void viewByDescription(struct Product products[], int productCount);
 void viewByPrice(struct Product products[], int productCount);
 
 // Purchase Product
-// void purchaseProduct(struct Product products[], int productCount);
-// void autoBuyProducts(struct Product products[], int productCount);
+
+
 
 // !!Owner functions!!
 
