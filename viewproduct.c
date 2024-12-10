@@ -49,14 +49,17 @@ void viewByDescription(struct Product products[], int productCount) {
 }
 
 void viewByPrice(struct Product products[], int productCount) {
+    float minPrice;
     float maxPrice;
+    printf("Enter minimum price to search: ");
+    scanf("%f", &minPrice);
     printf("Enter maximum price to search: ");
     scanf("%f", &maxPrice);
     
     printf("\n=== Search Results ===\n");
     printf("%-20s %-30s %-10s %-10s\n", "Name", "Description", "Price", "Stock");
     for(int i = 0; i < productCount; i++) {
-        if(products[i].price <= maxPrice) {
+        if(minPrice <= products[i].price && products[i].price <= maxPrice) {
             printf("%-20s %-30s $%-9.2f %-10d\n", 
                 products[i].name, 
                 products[i].description, 

@@ -22,11 +22,28 @@ int main() {
                 return 0;
             case 1:
                 displayOwnerMenu();
+                int ownerChoice;
+
+                do {
+                    printf("\n0. Return to Main Menu\n");
+                    printf("Enter your choice: ");
+                    scanf("%d", &ownerChoice);
+                    
+                    switch(ownerChoice) {
+                        case 0:
+                            printf("Returning to Main Menu...\n");
+                            break;
+                        default:
+                            printf("Invalid choice!\n");
+                            break;
+                    }
+                } while(ownerChoice != 0);
                 break;
             case 2:
                 displayCustomerMenu();
                 int customerChoice;
                 int viewChoice;
+                int purchaseChoice;
 
                 do {
                     printf("\n0. Return to Main Menu\n");
@@ -65,7 +82,21 @@ int main() {
                             }
                             break;
                         case 2:
-                            printf("1. Purchase");
+                            printf("1. Purchase product");
+                            printf("2. Auto-buy products");
+                            printf("Enter your choice: ");
+                            scanf("%d", &purchaseChoice);
+                            switch(purchaseChoice) {
+                                case 1:
+                                    // purchaseProduct(products, productCount);
+                                    break;
+                                case 2:
+                                    // autoBuyProducts(products, productCount);
+                                    break;
+                                default:
+                                    printf("Invalid choice!\n");
+                                    break;
+                            }
                         default:
                             printf("Invalid choice!\n");
                             break;
@@ -89,7 +120,6 @@ void displayMainMenu() {
 
 void displayOwnerMenu() {
     printf("\n=== Owner Menu ===\n");
-    printf("Feature coming soon...\n");
 }
 
 void displayCustomerMenu() {
@@ -97,7 +127,7 @@ void displayCustomerMenu() {
 }
 
 void loadProductsFromCSV(struct Product products[], int *productCount) {
-    FILE *file = fopen("products.csv", "r");
+    FILE *file = fopen("./csv/products.csv", "r");
     if (file == NULL) {
         printf("Error opening file!\n");
         return;

@@ -24,6 +24,17 @@ void viewByDescription(struct Product products[], int productCount);
 void viewByPrice(struct Product products[], int productCount);
 
 // Purchase Product
+// void purchaseProduct(struct Product products[], int productCount);
+// void autoBuyProducts(struct Product products[], int productCount);
 
+// !!Owner functions!!
+
+// View Reports
+
+// Edit Products
+
+// Restock Products
+
+// Edit Coupons
 
 #endif
