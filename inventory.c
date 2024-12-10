@@ -44,9 +44,10 @@ int main() {
                         printf("1. View Reports\n");
                         printf("2. Edit Products\n");
                         printf("3. Restock Products\n");
-                        printf("4. Edit Coupons");
+                        printf("4. Edit Coupons\n");
                         printf("Enter your choice: ");
                         scanf("%d", &ownerChoice);
+                        system("cls");
                         switch (ownerChoice) {
                             case 0:
                                 printf("Returning to Main Menu...\n");
@@ -62,6 +63,7 @@ int main() {
                                 break;
                             case 4:
                                 // Edit Coupons
+                                break;
                             default:
                                 printf("Invalid choice!\n");
                                 break;
