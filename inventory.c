@@ -1,68 +1,105 @@
 #include "inventory.h"
 
-void displayMainMenu();
-void displayOwnerMenu();
-void displayCustomerMenu();
-void loadProductsFromCSV(struct Product products[], int *productCount);
-void loadUsers();
+// Debugging function
+
+static void displayUsers(struct User users[], int userCount) {
+    for (int i = 0; i < userCount; i++) {
+        printf("Username: %s\n", users[i].username);
+        printf("Password: %s\n", users[i].password);
+        printf("Is Owner: %d\n", users[i].isOwner);
+    }
+}
+
+static void displayProducts(struct Product products[], int productCount) {
+    for (int i = 0; i < productCount; i++) {
+        printf("Name: %s\n", products[i].name);
+        printf("Description: %s\n", products[i].description);
+        printf("Price: %.2f\n", products[i].price);
+        printf("Stock: %d\n", products[i].stock);
+    }
+}
+
+static void displayCoupons(struct Coupon coupons[], int couponCount) {
+    for (int i = 0; i < couponCount; i++) {
+        printf("Code: %s\n", coupons[i].code);
+        printf("Discount: %.2f\n", coupons[i].discount);
+        printf("Expiry Date: %s\n", coupons[i].expiryDate);
+    }
+}
+
+// Main function
 
 int main() {
     struct Product products[MAX_PRODUCTS];
     int productCount = 0;
+    struct User users[MAX_USERS];
+    int userCount = 0;
+    struct Coupon coupons[MAX_COUPONS];
+    int couponCount = 0;
+    struct AutoPurchase autoPurchases[MAX_AUTOPURCHASES];
+    int autoPurchaseCount = 0;
     int choice;
     
+    system("cls");
+    printf("Loading data...\n");
     loadProductsFromCSV(products, &productCount);
-    loadUsers();
-    
+    loadCoupons(coupons, &couponCount);
+    loadAutoPurchases(autoPurchases, &autoPurchaseCount);
+    sortProducts(products, productCount);
+    sortCoupons(coupons, couponCount);
+    performAutoPurchases(products, productCount, coupons, couponCount, autoPurchases, autoPurchaseCount);
     while(1) {
-        displayMainMenu();
+        loadUsers(users, &userCount);
+        printf("\n=== Inventory Management System ===\n");
+        printf("1. Owner Menu\n");
+        printf("2. Customer Menu\n");
+        printf("3. Account Register\n");
+        printf("0. Exit\n");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
+
         system("cls");
         switch(choice) {
-            case 0:
-                printf("Thank you for using the system!\n");
-                return 0;
             case 1: {
+                // Owner Login
                 char username[50], password[50];
                 printf("\nOwner Login\n");
                 printf("Username: ");
                 scanf("%s", username);
                 printf("Password: ");
                 scanf("%s", password);
-                system("cls");
 
-                if (authenticateUser(username, password, 1)) {
-                    displayOwnerMenu();
+                if (authenticateUser(users, userCount, username, password, 1)) {
+                    // Owner Menu
                     int ownerChoice;
-                    int reportChoice; // Yang Mai Dai Tam Report Na
-                    int editChoice; // Yang Mai
-                    int restockChoice; // Dai Tam
-                    int couponChoice; // Loeyyyy
 
+                    system("cls");
                     do {
-                        printf("\n0. Return to Main Menu\n");
+                        printf("\n=== Owner Menu ===\n");
                         printf("1. View Reports\n");
                         printf("2. Edit Products\n");
                         printf("3. Restock Products\n");
                         printf("4. Edit Coupons\n");
+                        printf("0. Return to Main Menu\n");
                         printf("Enter your choice: ");
                         scanf("%d", &ownerChoice);
+
                         system("cls");
                         switch (ownerChoice) {
-                            case 0:
-                                printf("Returning to Main Menu...\n");
-                                break;
                             case 1:
-                                // View Reports
+                                viewReports(products, productCount);
                                 break;
                             case 2:
-                                // Edit Products
+                                editProducts(products, productCount);
                                 break;
                             case 3:
-                                // Restock Products
+                                restockProducts(products, productCount);
                                 break;
                             case 4:
-                                // Edit Coupons
+                                editCoupons(coupons, couponCount);
+                                break;
+                            case 0:
+                                printf("Returning to Main Menu...\n");
                                 break;
                             default:
                                 printf("Invalid choice!\n");
@@ -75,75 +112,37 @@ int main() {
                 break;
             }
             case 2: {
+                // Customer Login
                 char username[50], password[50];
                 printf("\nCustomer Login\n");
                 printf("Username: ");
                 scanf("%s", username);
                 printf("Password: ");
                 scanf("%s", password);
-                system("cls");
-                
-                if (authenticateUser(username, password, 0)) {
-                    displayCustomerMenu();
-                    int customerChoice;
-                    int viewChoice;
-                    int purchaseChoice; // Yang mai sed
 
+                if (authenticateUser(users, userCount, username, password, 0)) {
+                    // Customer Menu
+                    int customerChoice;
+
+                    system("cls");
                     do {
-                        printf("\n0. Return to Main Menu\n");
+                        printf("\n=== Customer Menu ===\n");
                         printf("1. View Products\n");
                         printf("2. Purchase Product\n");
+                        printf("0. Return to Main Menu\n");
                         printf("Enter your choice: ");
                         scanf("%d", &customerChoice);
+
                         system("cls");
-                        
                         switch(customerChoice) {
-                            case 0:
-                                printf("Returning to Main Menu...\n");
-                                break;
                             case 1:
-                                printf("\n1. View All Products\n");
-                                printf("2. View by Name\n");
-                                printf("3. View by Description\n");
-                                printf("4. View by Price\n");
-                                printf("Enter your choice: ");
-                                scanf("%d", &viewChoice);
-                                system("cls");
-                                switch(viewChoice) {
-                                    case 1:
-                                        viewAllProducts(products, productCount);
-                                        break;
-                                    case 2:
-                                        viewByName(products, productCount);
-                                        break;
-                                    case 3:
-                                        viewByDescription(products, productCount);
-                                        break;
-                                    case 4:
-                                        viewByPrice(products, productCount);
-                                        break;
-                                    default:
-                                        printf("Invalid choice!\n");
-                                        break;
-                                }
+                                viewProducts(products, productCount);
                                 break;
                             case 2:
-                                printf("\n1. Purchase product\n");
-                                printf("2. Schedule Auto-buy\n");
-                                printf("Enter your choice: ");
-                                scanf("%d", &purchaseChoice);
-                                system("cls");
-                                switch (purchaseChoice) {
-                                    case 1:
-                                        // Purchase product
-                                        break;
-                                    case 2:
-                                        // Schedule Auto-buy
-                                        break;
-                                    default:
-                                        printf("Invalid choice!\n");
-                                        break;
-                                }
+                                purchaseProducts(products, productCount, coupons, couponCount);
+                                break;
+                            case 0:
+                                printf("Returning to Main Menu...\n");
                                 break;
                             default:
                                 printf("Invalid choice!\n");
@@ -155,51 +154,36 @@ int main() {
                 }
                 break;
             }
+            case 3: {
+                // Account Register
+                char username[50], password[50];
+                int isOwner;
+
+                system("cls");
+                printf("\nAccount Register\n");
+                printf("Username: ");
+                scanf("%s", username);
+                printf("Password: ");
+                scanf("%s", password);
+                printf("Are you an owner? (1 for yes, 0 for no): ");
+                scanf("%d", &isOwner);
+                system("cls");
+
+                if (isOwner != 0 && isOwner != 1) {
+                    printf("Invalid choice!\n");
+                    break;
+                }
+                registerUser(username, password, isOwner);
+                printf("Account registered successfully!\n");
+                break;
+            case 0:
+                printf("Thank you for using the system!\n\n");
+                return 0;
             default:
                 printf("Invalid choice!\n");
+                break;
+            }
         }
     }
     return 0;
-}
-
-void displayMainMenu() {
-    printf("\n=== Inventory Management System ===\n");
-    printf("0. Exit\n");
-    printf("1. Owner Menu\n");
-    printf("2. Customer Menu\n");
-    printf("Enter your choice: ");
-}
-
-void displayOwnerMenu() {
-    printf("\n=== Owner Menu ===\n");
-}
-
-void displayCustomerMenu() {
-    printf("\n=== Customer Menu ===\n");
-}
-
-void loadProductsFromCSV(struct Product products[], int *productCount) {
-    FILE *file = fopen("./csv/products.csv", "r");
-    if (file == NULL) {
-        printf("Error opening file!\n");
-        return;
-    }
-    
-    char line[MAX_LINE];
-    while (fgets(line, MAX_LINE, file) && *productCount < MAX_PRODUCTS) {
-        char *token = strtok(line, ",");
-        strcpy(products[*productCount].name, token);
-        
-        token = strtok(NULL, ",");
-        strcpy(products[*productCount].description, token);
-        
-        token = strtok(NULL, ",");
-        products[*productCount].price = atof(token);
-        
-        token = strtok(NULL, ",");
-        products[*productCount].stock = atoi(token);
-        
-        (*productCount)++;
-    }
-    fclose(file);
 }

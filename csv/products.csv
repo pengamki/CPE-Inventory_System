@@ -1,10 +1,13 @@
-Name,Description,Price,Stock
-ABC,Shampoo,10.69,20
+AAA,Razor Blade,25.00,22
+ABC,Shampoo,10.00,90
+ABE,Shampoo,20.00,20
+BBB,Toothpaste,17.50,20
+BBC,Toothbrush,20.00,20
 DEF,Conditioner,5.99,30
-GHI,Soap,2.99,40
+GHI,Soap,2.99,30
 JKL,Toothpaste,3.99,50
 MNO,Toothbrush,1.99,60
-PQR,Shaving Cream,4.99,70
+PQR,Shaving Cream,4.99,60
 STU,Shaving Razor,6.99,80
-VWX,Deodorant,7.99,90
+TSA,Hairbrush,69.00,19
 YZA,Perfume,8.99,100

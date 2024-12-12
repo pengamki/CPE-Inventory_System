@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "bcrypt.h": "c"
+        "bcrypt.h": "c",
+        "gen_auth": "cpp"
     }
 }

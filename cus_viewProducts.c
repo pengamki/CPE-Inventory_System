@@ -1,5 +1,39 @@
 #include "inventory.h"
 
+void viewProducts(struct Product products[], int productCount) {
+    int viewChoice;
+    
+    printf("\n1. View All Products\n");
+    printf("2. View by Name\n");
+    printf("3. View by Description\n");
+    printf("4. View by Price\n");
+    printf("0. Exit\n");
+    printf("Enter your choice: ");
+    scanf("%d", &viewChoice);
+
+    system("cls");
+    switch(viewChoice) {
+        case 1:
+            viewAllProducts(products, productCount);
+            break;
+        case 2:
+            viewByName(products, productCount);
+            break;
+        case 3:
+            viewByDescription(products, productCount);
+            break;
+        case 4:
+            viewByPrice(products, productCount);
+            break;
+        case 0:
+            printf("Exiting...\n");
+            break;
+        default:
+            printf("Invalid choice!\n");
+            break;
+    }
+}
+
 void viewAllProducts(struct Product products[], int productCount) {
     printf("\n=== All Products ===\n");
     printf("%-20s %-30s %-10s %-10s\n", "Name", "Description", "Price", "Stock");
