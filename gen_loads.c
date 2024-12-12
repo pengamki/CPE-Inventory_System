@@ -10,7 +10,7 @@ void loadProductsFromCSV(struct Product products[], int *productCount) {
     char line[MAX_LINE];
     *productCount = 0;
     while (fgets(line, MAX_LINE, file) && *productCount < MAX_PRODUCTS) {
-        char *delim = ",";
+        char *delim = ",\n";
 
         char *token = strtok(line, delim);
         strcpy(products[*productCount].name, token);
@@ -43,7 +43,7 @@ void loadUsers(struct User users[], int *userCount) {
     char line[MAX_LINE];
     *userCount = 0;
     while (fgets(line, MAX_LINE, file) && *userCount < MAX_USERS) {
-        char *delim = ",";
+        char *delim = ",\n";
 
         char *token = strtok(line, delim);
         strcpy(users[*userCount].username, token);
@@ -95,7 +95,7 @@ void loadAutoPurchases(struct AutoPurchase autoPurchases[], int *autoPurchaseCou
     char line[MAX_LINE];
     *autoPurchaseCount = 0;
     while (fgets(line, MAX_LINE, file) && *autoPurchaseCount < MAX_AUTOPURCHASES) {
-        char *delim = ",";
+        char *delim = ",\n";
 
         char *token = strtok(line, delim);
         strcpy(autoPurchases[*autoPurchaseCount].productName, token);
@@ -104,12 +104,44 @@ void loadAutoPurchases(struct AutoPurchase autoPurchases[], int *autoPurchaseCou
         autoPurchases[*autoPurchaseCount].quantity = atoi(token);
 
         token = strtok(NULL, delim);
+        strcpy(autoPurchases[*autoPurchaseCount].couponCode, token);
+
+        token = strtok(NULL, delim);
         strcpy(autoPurchases[*autoPurchaseCount].purchaseDay, token);
 
         token = strtok(NULL, delim);
         strcpy(autoPurchases[*autoPurchaseCount].lastPurchase, token);
 
         (*autoPurchaseCount)++;
+    }
+    fclose(file);
+}
+
+void loadAutoRestocks(struct AutoRestock autoRestocks[], int *autoRestockCount) {
+    FILE *file = fopen("./csv/autorestock.csv", "r");
+    if (file == NULL) {
+        printf("No auto-restock file found.\n");
+        return;
+    }
+
+    char line[MAX_LINE];
+    *autoRestockCount = 0;
+    while (fgets(line, MAX_LINE, file) && *autoRestockCount < MAX_AUTORESTOCKS) {
+        char *delim = ",\n";
+
+        char *token = strtok(line, delim);
+        strcpy(autoRestocks[*autoRestockCount].productName, token);
+
+        token = strtok(NULL, delim);
+        autoRestocks[*autoRestockCount].quantity = atoi(token);
+
+        token = strtok(NULL, delim);
+        strcpy(autoRestocks[*autoRestockCount].restockDay, token);
+
+        token = strtok(NULL, delim);
+        strcpy(autoRestocks[*autoRestockCount].lastRestock, token);
+
+        (*autoRestockCount)++;
     }
     fclose(file);
 }

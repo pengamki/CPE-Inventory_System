@@ -21,7 +21,7 @@ void restockProducts(struct Product products[], int productCount) {
                 restockProduct(products, productCount);
                 break;
             case 3:
-                // Schedule Auto-restock
+                autoRestock(products, productCount);
                 break;
             case 0:
                 printf("Exiting...\n");

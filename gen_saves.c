@@ -30,13 +30,25 @@ void saveCouponsToCSV(struct Coupon coupons[], int couponCount) {
 void saveAutoPurchases(struct AutoPurchase autoPurchases[], int autoPurchaseCount) {
     FILE *file = fopen("./csv/autopurchase.csv", "w");
     if (file == NULL) {
-        printf("Error opening file!\n");
+        printf("Error opening autopurchase file!\n");
         return;
     }
 
     for (int i = 0; i < autoPurchaseCount; i++) {
-        fprintf(file, "%s,%d,%s,%s\n", autoPurchases[i].productName, autoPurchases[i].quantity, autoPurchases[i].purchaseDay, autoPurchases[i].lastPurchase);
+        fprintf(file, "%s,%d,%s,%s,%s\n", autoPurchases[i].productName, autoPurchases[i].quantity, autoPurchases[i].couponCode, autoPurchases[i].purchaseDay, autoPurchases[i].lastPurchase);
+    }
+    fclose(file);
+}
+
+void saveAutoRestocks(struct AutoRestock autoRestocks[], int autoRestockCount) {
+    FILE *file = fopen("./csv/autorestock.csv", "w");
+    if (file == NULL) {
+        printf("Error opening autorestock file!\n");
+        return;
     }
 
+    for (int i = 0; i < autoRestockCount; i++) {
+        fprintf(file, "%s,%d,%s,%s\n", autoRestocks[i].productName, autoRestocks[i].quantity, autoRestocks[i].restockDay, autoRestocks[i].lastRestock);
+    }
     fclose(file);
 }
