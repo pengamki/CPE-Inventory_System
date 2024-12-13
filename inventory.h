@@ -83,10 +83,9 @@ void viewByName(struct Product products[], int productCount);
 void viewByDescription(struct Product products[], int productCount);
 void viewByPrice(struct Product products[], int productCount);
 // Purchase Product
-void purchaseProducts(struct Product products[], int productCount, struct Coupon coupons[], int couponCount); // Parent function
 void purchaseProduct(struct Product products[], int productCount, struct Coupon coupons[], int couponCount);
-int isCouponValid(const char* expirationDate);
 // Purchase : Auto Purchase
+void setAutoPurchase(struct Product products[], int productCount, struct Coupon coupons[], int couponCount, struct AutoPurchase autoPurchases[], int autoPurchaseCount); // Parent function
 void autoPurchase(struct Product products[], int productCount, struct Coupon coupons[], int couponCount);
 void performAutoPurchases(struct Product products[], int productCount, struct Coupon coupons[], int couponCount, struct AutoPurchase autoPurchases[], int autoPurchaseCount);
 void viewAutoPurchases(struct AutoPurchase autoPurchases[], int autoPurchaseCount);
@@ -103,9 +102,9 @@ void addProduct(struct Product products[], int *productCount);
 void removeProduct(struct Product products[], int *productCount);
 void editProduct(struct Product products[], int productCount);
 // Restock Products
-void restockProducts(struct Product products[], int productCount); // Parent function
 void restockProduct(struct Product products[], int productCount);
 // Restock : Auto Restock
+void setAutoRestock(struct Product products[], int productCount, struct AutoRestock autoRestocks[], int autoRestockCount); // Parent function
 void autoRestock(struct Product products[], int productCount);
 void performAutoRestocks(struct Product products[], int productCount, struct AutoRestock autoRestocks[], int autoRestockCount);
 void viewAutoRestocks(struct AutoRestock autoRestocks[], int autoRestockCount);
@@ -116,5 +115,6 @@ void viewCoupons(struct Coupon coupons[], int couponCount);
 void addCoupon(struct Coupon coupons[], int *couponCount);
 void removeCoupon(struct Coupon coupons[], int *couponCount);
 void applyCoupon(struct Coupon coupons[], int couponCount, float *totalPrice);
+int isCouponValid(const char* expirationDate);
 
 #endif

@@ -1,31 +1,5 @@
 #include "inventory.h"
 
-void purchaseProducts(struct Product products[], int productCount, struct Coupon coupons[], int couponCount) {
-    int purchaseChoice;
-
-    printf("\n1. Purchase product\n");
-    printf("2. Schedule Auto-buy\n");
-    printf("0. Exit\n");
-    printf("Enter your choice: ");
-    scanf("%d", &purchaseChoice);
-
-    system("cls");
-    switch (purchaseChoice) {
-        case 1:
-            purchaseProduct(products, productCount, coupons, couponCount);
-            break;
-        case 2:
-            autoPurchase(products, productCount, coupons, couponCount);
-            break;
-        case 0:
-            printf("Exiting...\n");
-            break;
-        default:
-            printf("Invalid choice!\n");
-            break;
-    }
-}
-
 void purchaseProduct(struct Product products[], int productCount, struct Coupon coupons[], int couponCount) {
     char productName[50];
     int quantity;
@@ -94,25 +68,4 @@ void purchaseProduct(struct Product products[], int productCount, struct Coupon 
     saveProductsToCSV(products, productCount);
 
     printf("Purchase successful! Total price: %.2f\n", totalPrice);
-}
-
-int isCouponValid(const char* expirationDate) {
-    int year, month, day;
-    sscanf(expirationDate, "%d-%d-%d", &year, &month, &day);
-
-    time_t now = time(NULL);
-    struct tm *current = localtime(&now);
-
-    if (year < (current->tm_year + 1900)) {
-        return 0;
-    } else if (year == (current->tm_year + 1900)) {
-        if (month < (current->tm_mon + 1)) {
-            return 0;
-        } else if (month == (current->tm_mon + 1)) {
-            if (day < current->tm_mday) {
-                return 0;
-            }
-        }
-    }
-    return 1;
 }

@@ -1,5 +1,32 @@
 #include "inventory.h"
 
+void setAutoPurchase(struct Product products[], int productCount, struct Coupon coupons[], int couponCount, struct AutoPurchase autoPurchases[], int autoPurchaseCount) {
+    int purchaseChoice;
+
+    loadAutoPurchases(autoPurchases, &autoPurchaseCount);
+    printf("\n1. View Auto-buy Schedule\n");
+    printf("2. Schedule Auto-buy\n");
+    printf("0. Exit\n");
+    printf("Enter your choice: ");
+    scanf("%d", &purchaseChoice);
+
+    system("cls");
+    switch (purchaseChoice) {
+        case 1:
+            autoPurchase(products, productCount, coupons, couponCount);
+            break;
+        case 2:
+            viewAutoPurchases(autoPurchases, autoPurchaseCount);
+            break;
+        case 0:
+            printf("Exiting...\n");
+            break;
+        default:
+            printf("Invalid choice!\n");
+            break;
+    }
+}
+
 void autoPurchase(struct Product products[], int productCount, struct Coupon coupons[], int couponCount) {
     char productName[50];
     int quantity;
@@ -44,6 +71,8 @@ void autoPurchase(struct Product products[], int productCount, struct Coupon cou
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     strftime(lastPurchase, sizeof(lastPurchase), "%Y-%m-%d", t);
+
+
 
     FILE *file = fopen("./csv/autopurchase.csv", "a");
     if (file == NULL) {

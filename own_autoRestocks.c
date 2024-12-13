@@ -1,5 +1,38 @@
 #include "inventory.h"
 
+void setAutoRestock(struct Product products[], int productCount, struct AutoRestock autoRestocks[], int autoRestockCount) {
+    int choice;
+
+    loadAutoRestocks(autoRestocks, &autoRestockCount);
+    do {
+        printf("\n=== Restock Products Menu ===\n");
+        printf("1. View Auto-restock Schedule\n");
+        printf("2. Schedule Auto-restock\n");
+        printf("0. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        system("cls");
+        switch(choice) {
+            case 1:
+                viewAutoRestocks(autoRestocks, autoRestockCount);
+                break;
+            case 2:
+                autoRestock(products, productCount);
+                break;
+            case 0:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice!\n");
+                break;
+        }
+    } while(choice != 0);
+
+    sortProducts(products, productCount);
+    saveProductsToCSV(products, productCount);
+}
+
 void autoRestock(struct Product products[], int productCount) {
     char productName[50];
     int quantity;

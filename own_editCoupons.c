@@ -128,3 +128,24 @@ void applyCoupon(struct Coupon coupons[], int couponCount, float *totalPrice) {
 
     *totalPrice -= (*totalPrice * discount / 100);
 }
+
+int isCouponValid(const char* expirationDate) {
+    int year, month, day;
+    sscanf(expirationDate, "%d-%d-%d", &year, &month, &day);
+
+    time_t now = time(NULL);
+    struct tm *current = localtime(&now);
+
+    if (year < (current->tm_year + 1900)) {
+        return 0;
+    } else if (year == (current->tm_year + 1900)) {
+        if (month < (current->tm_mon + 1)) {
+            return 0;
+        } else if (month == (current->tm_mon + 1)) {
+            if (day < current->tm_mday) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}

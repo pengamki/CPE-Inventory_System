@@ -84,7 +84,7 @@ int main() {
                         printf("2. Edit Products\n");
                         printf("3. Restock Products\n");
                         printf("4. Edit Coupons\n");
-                        printf("5. View Auto-restock schedule\n");
+                        printf("5. Set Auto-restock\n");
                         printf("0. Return to Main Menu\n");
                         printf("Enter your choice: ");
                         scanf("%d", &ownerChoice);
@@ -98,14 +98,13 @@ int main() {
                                 editProducts(products, productCount);
                                 break;
                             case 3:
-                                restockProducts(products, productCount);
+                                restockProduct(products, productCount);
                                 break;
                             case 4:
                                 editCoupons(coupons, couponCount);
                                 break;
                             case 5:
-                                loadAutoRestocks(autoRestocks, &autoRestockCount);
-                                viewAutoRestocks(autoRestocks, autoRestockCount);
+                                setAutoRestock(products, productCount, autoRestocks, autoRestockCount);
                                 break;
                             case 0:
                                 printf("Returning to Main Menu...\n");
@@ -138,7 +137,7 @@ int main() {
                         printf("\n=== Customer Menu ===\n");
                         printf("1. View Products\n");
                         printf("2. Purchase Product\n");
-                        printf("3. View Auto-buy Schedule\n");
+                        printf("3. Set Auto-buy\n");
                         printf("0. Return to Main Menu\n");
                         printf("Enter your choice: ");
                         scanf("%d", &customerChoice);
@@ -149,11 +148,10 @@ int main() {
                                 viewProducts(products, productCount);
                                 break;
                             case 2:
-                                purchaseProducts(products, productCount, coupons, couponCount);
+                                purchaseProduct(products, productCount, coupons, couponCount);
                                 break;
                             case 3:
-                                loadAutoPurchases(autoPurchases, &autoPurchaseCount);
-                                viewAutoPurchases(autoPurchases, autoPurchaseCount);
+                                setAutoPurchase(products, productCount, coupons, couponCount, autoPurchases, autoPurchaseCount);
                                 break;
                             case 0:
                                 printf("Returning to Main Menu...\n");
