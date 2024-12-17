@@ -30,12 +30,13 @@ static void displayCoupons(struct Coupon coupons[], int couponCount) {
 // Main function
 
 int main() {
-    struct Product products[MAX_PRODUCTS];
-    int productCount = 0;
     struct User users[MAX_USERS];
     int userCount = 0;
+    struct Product products[MAX_PRODUCTS];
+    int productCount = 0;
     struct Coupon coupons[MAX_COUPONS];
     int couponCount = 0;
+    int threshold = 0;
     struct AutoPurchase autoPurchases[MAX_AUTOPURCHASES];
     int autoPurchaseCount = 0;
     struct AutoRestock autoRestocks[MAX_AUTORESTOCKS];
@@ -44,12 +45,15 @@ int main() {
     
     system("cls");
     printf("Loading data...\n");
-    loadProductsFromCSV(products, &productCount);
+    loadProducts(products, &productCount);
     loadCoupons(coupons, &couponCount);
+    loadThreshold(&threshold);
     loadAutoPurchases(autoPurchases, &autoPurchaseCount);
     loadAutoRestocks(autoRestocks, &autoRestockCount);
-    sortProducts(products, productCount);
-    sortCoupons(coupons, couponCount);
+    // sortProducts(products, productCount);
+    // sortCoupons(coupons, couponCount);
+    // saveProducts(products, productCount);
+    // saveCoupons(coupons, couponCount);
     performAutoPurchases(products, productCount, coupons, couponCount, autoPurchases, autoPurchaseCount);
     performAutoRestocks(products, productCount, autoRestocks, autoRestockCount);
     while(1) {
@@ -81,10 +85,10 @@ int main() {
                     do {
                         printf("\n=== Owner Menu ===\n");
                         printf("1. View Reports\n");
-                        printf("2. Edit Products\n");
-                        printf("3. Restock Products\n");
-                        printf("4. Edit Coupons\n");
-                        printf("5. Set Auto-restock\n");
+                        printf("2. Restock Products\n");
+                        printf("3. Set Auto-restock\n");
+                        printf("4. Edit Products\n");
+                        printf("5. Edit Coupons\n");
                         printf("0. Return to Main Menu\n");
                         printf("Enter your choice: ");
                         scanf("%d", &ownerChoice);
@@ -95,16 +99,16 @@ int main() {
                                 viewReports(products, productCount);
                                 break;
                             case 2:
-                                editProducts(products, productCount);
+                                restockProducts(products, productCount, &threshold);
                                 break;
                             case 3:
-                                restockProduct(products, productCount);
+                                setAutoRestock(products, productCount, autoRestocks, &autoRestockCount);
                                 break;
                             case 4:
-                                editCoupons(coupons, couponCount);
+                                editProducts(products, &productCount);
                                 break;
                             case 5:
-                                setAutoRestock(products, productCount, autoRestocks, autoRestockCount);
+                                editCoupons(coupons, &couponCount);
                                 break;
                             case 0:
                                 printf("Returning to Main Menu...\n");
@@ -151,7 +155,7 @@ int main() {
                                 purchaseProduct(products, productCount, coupons, couponCount);
                                 break;
                             case 3:
-                                setAutoPurchase(products, productCount, coupons, couponCount, autoPurchases, autoPurchaseCount);
+                                setAutoPurchase(products, productCount, coupons, couponCount, autoPurchases, &autoPurchaseCount);
                                 break;
                             case 0:
                                 printf("Returning to Main Menu...\n");
@@ -173,28 +177,37 @@ int main() {
 
                 system("cls");
                 printf("\nAccount Register\n");
+
                 printf("Username: ");
                 scanf("%s", username);
+                if (usernameExists(users, userCount, username)) {
+                    system("cls");
+                    printf("Username already exists! Please choose a different username.\n");
+                    break;
+                }
+
                 printf("Password: ");
                 scanf("%s", password);
+
                 printf("Are you an owner? (1 for yes, 0 for no): ");
                 scanf("%d", &isOwner);
-                system("cls");
-
                 if (isOwner != 0 && isOwner != 1) {
+                    system("cls");
                     printf("Invalid choice!\n");
                     break;
                 }
-                registerUser(username, password, isOwner);
+
+                system("cls");
+                saveUser(username, password, isOwner);
                 printf("Account registered successfully!\n");
                 break;
+            }
             case 0:
                 printf("Thank you for using the system!\n\n");
                 return 0;
             default:
                 printf("Invalid choice!\n");
                 break;
-            }
         }
     }
     return 0;

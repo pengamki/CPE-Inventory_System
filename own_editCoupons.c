@@ -1,16 +1,14 @@
 #include "inventory.h"
 
-void editCoupons(struct Coupon coupons[], int couponCount) {
+void editCoupons(struct Coupon coupons[], int *couponCount) {
     int choice;
     float totalPrice;
 
-    loadCoupons(coupons, &couponCount);
     do {
         printf("\n=== Coupon Menu ===\n");
         printf("1. View Coupons\n");
         printf("2. Add Coupon\n");
         printf("3. Remove Coupon\n");
-        printf("4. Apply Coupon\n");
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -18,19 +16,13 @@ void editCoupons(struct Coupon coupons[], int couponCount) {
         system("cls");
         switch(choice) {
             case 1:
-                viewCoupons(coupons, couponCount);
+                viewCoupons(coupons, *couponCount);
                 break;
             case 2:
-                addCoupon(coupons, &couponCount);
+                addCoupon(coupons, couponCount);
                 break;
             case 3:
-                removeCoupon(coupons, &couponCount);
-                break;
-            case 4:
-                printf("Enter the total price: ");
-                scanf("%f", &totalPrice);
-                applyCoupon(coupons, couponCount, &totalPrice);
-                printf("Total price after discount: %.2f\n", totalPrice);
+                removeCoupon(coupons, couponCount);
                 break;
             case 0:
                 printf("Exiting...\n");
@@ -40,9 +32,6 @@ void editCoupons(struct Coupon coupons[], int couponCount) {
                 break;
         }
     } while(choice != 0);
-
-    sortCoupons(coupons, couponCount);
-    saveCouponsToCSV(coupons, couponCount);
 }
 
 void viewCoupons(struct Coupon coupons[], int couponCount) {
@@ -66,10 +55,20 @@ void addCoupon(struct Coupon coupons[], int *couponCount) {
     printf("Enter discount percentage: ");
     scanf("%f", &discount);
 
+    if (discount < 0) {
+        printf("Invalid discount!\n");
+        return;
+    }
+
     while (getchar() != '\n');
     printf("Enter expiry date (YYYY-MM-DD): ");
     fgets(expiryDate, sizeof(expiryDate), stdin);
     expiryDate[strcspn(expiryDate, "\n")] = 0;
+
+    if (!isValidDate(expiryDate)) {
+        printf("Invalid expiry date!\n");
+        return;
+    }
 
     strcpy(coupons[*couponCount].code, code);
     coupons[*couponCount].discount = discount;
@@ -77,7 +76,7 @@ void addCoupon(struct Coupon coupons[], int *couponCount) {
     (*couponCount)++;
 
     sortCoupons(coupons, *couponCount);
-    saveCouponsToCSV(coupons, *couponCount);
+    saveCoupons(coupons, *couponCount);
     printf("Coupon added!\n");
 }
 
@@ -106,27 +105,23 @@ void removeCoupon(struct Coupon coupons[], int *couponCount) {
     } else {
         printf("Coupon not found!\n");
     }
+
+    sortCoupons(coupons, *couponCount);
+    saveCoupons(coupons, *couponCount);
 }
 
-void applyCoupon(struct Coupon coupons[], int couponCount, float *totalPrice) {
-    char code[20];
-    float discount = 0.0;
+int isValidDate(const char* date) {
+    int year, month, day;
+    sscanf(date, "%d-%d-%d", &year, &month, &day);
 
-    while (getchar() != '\n');
-    printf("Enter coupon code: ");
-    fgets(code, sizeof(code), stdin);
-    code[strcspn(code, "\n")] = 0;
-
-    for (int i = 0; i < couponCount; i++) {
-        if (strcmp(coupons[i].code, code) == 0) {
-            if (isCouponValid(coupons[i].expiryDate)) {
-                discount = coupons[i].discount;
-                break;
-            }
-        }
+    if (year < 2021) {
+        return 0;
+    } else if (month < 1 || month > 12) {
+        return 0;
+    } else if (day < 1 || day > 31) {
+        return 0;
     }
-
-    *totalPrice -= (*totalPrice * discount / 100);
+    return 1;
 }
 
 int isCouponValid(const char* expirationDate) {

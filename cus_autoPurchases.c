@@ -1,60 +1,62 @@
 #include "inventory.h"
 
-void setAutoPurchase(struct Product products[], int productCount, struct Coupon coupons[], int couponCount, struct AutoPurchase autoPurchases[], int autoPurchaseCount) {
-    int purchaseChoice;
+void setAutoPurchase(struct Product products[], int productCount, struct Coupon coupons[], int couponCount, struct AutoPurchase autoPurchases[], int *autoPurchaseCount) {
+    int choice;
 
-    loadAutoPurchases(autoPurchases, &autoPurchaseCount);
-    printf("\n1. View Auto-buy Schedule\n");
-    printf("2. Schedule Auto-buy\n");
-    printf("0. Exit\n");
-    printf("Enter your choice: ");
-    scanf("%d", &purchaseChoice);
+    do {
+        printf("\n1. View Auto-buy Schedule\n");
+        printf("2. Add Auto-buy Schedule\n");
+        printf("3. Remove Auto-buy Schedule\n");
+        printf("0. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
 
-    system("cls");
-    switch (purchaseChoice) {
-        case 1:
-            autoPurchase(products, productCount, coupons, couponCount);
-            break;
-        case 2:
-            viewAutoPurchases(autoPurchases, autoPurchaseCount);
-            break;
-        case 0:
-            printf("Exiting...\n");
-            break;
-        default:
-            printf("Invalid choice!\n");
-            break;
+        system("cls");
+        switch (choice) {
+            case 1:
+                viewAutoPurchases(autoPurchases, *autoPurchaseCount);
+                break;
+            case 2:
+                addAutoPurchase(products, productCount, coupons, couponCount, autoPurchases, autoPurchaseCount);
+                break;
+            case 3:
+                removeAutoPurchase(autoPurchases, autoPurchaseCount);
+                break;
+            case 0:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice!\n");
+                break;
+        }
+    }   while (choice != 0);
+}
+
+void viewAutoPurchases(struct AutoPurchase autoPurchases[], int autoPurchaseCount) {
+    printf("\n=== Auto-Purchase Schedule ===\n");
+    printf("%-20s %-10s %-10s %-15s %-10s\n", "Product Name", "Quantity", "Coupon", "Purchase Day", "Last Purchase");
+    for (int i = 0; i < autoPurchaseCount; i++) {
+        printf("%-20s %-10d %-10s %-15s %-10s\n", 
+            autoPurchases[i].productName, 
+            autoPurchases[i].quantity, 
+            autoPurchases[i].couponCode, 
+            autoPurchases[i].purchaseDay, 
+            autoPurchases[i].lastPurchase);
     }
 }
 
-void autoPurchase(struct Product products[], int productCount, struct Coupon coupons[], int couponCount) {
+void addAutoPurchase(struct Product products[], int productCount, struct Coupon coupons[], int couponCount, struct AutoPurchase autoPurchases[], int *autoPurchaseCount) {
     char productName[50];
     int quantity;
     char couponCode[20];
     char purchaseDay[10];
     char lastPurchase[11];
     int found = 0;
-    float totalPrice = 0.0;
-    float discount = 0.0;
 
+    while (getchar() != '\n');
     printf("Enter the product name: ");
-    scanf("%s", productName);
-    printf("Enter the quantity: ");
-    scanf("%d", &quantity);
-    printf("Enter the coupon code (or press enter to skip): ");
-    scanf("%s", couponCode);
-    printf("Enter the purchase day (e.g., Monday): ");
-    scanf("%s", purchaseDay);
-
-    if (!isValidDay(purchaseDay)) {
-        printf("Invalid purchase day! Aborting process.\n");
-        return;
-    }
-
-    if (quantity <= 0) {
-        printf("Invalid quantity! Aborting process.\n");
-        return;
-    }
+    fgets(productName, sizeof(productName), stdin);
+    productName[strcspn(productName, "\n")] = 0;
 
     for (int i = 0; i < productCount; i++) {
         if (strcmp(products[i].name, productName) == 0) {
@@ -68,22 +70,89 @@ void autoPurchase(struct Product products[], int productCount, struct Coupon cou
         return;
     }
 
+
+    printf("Enter the quantity: ");
+    scanf("%d", &quantity);
+
+    if (quantity <= 0) {
+        printf("Invalid quantity!\n");
+        return;
+    }
+
+    while (getchar() != '\n');
+    printf("Enter the coupon code (or press enter to skip): ");
+    fgets(couponCode, sizeof(couponCode), stdin);
+    couponCode[strcspn(couponCode, "\n")] = 0;
+
+    if (strlen(couponCode) == 0) {
+        printf("No coupon applied.\n");
+    } else {
+        int couponFound = 0;
+        for (int i = 0; i < couponCount; i++) {
+            if (strcmp(coupons[i].code, couponCode) == 0) {
+                if (isCouponValid(coupons[i].expiryDate)) {
+                    couponFound = 1;
+                    break;
+                }
+            }
+        }
+
+        if (!couponFound) {
+            printf("Invalid coupon code!\n");
+            return;
+        }
+    }
+
+    printf("Enter the purchase day (e.g., Monday): ");
+    scanf("%s", purchaseDay);
+
+    if (!isValidDay(purchaseDay)) {
+        printf("Invalid purchase day! Aborting process.\n");
+        return;
+    }
+
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     strftime(lastPurchase, sizeof(lastPurchase), "%Y-%m-%d", t);
 
+    strcpy(autoPurchases[*autoPurchaseCount].productName, productName);
+    autoPurchases[*autoPurchaseCount].quantity = quantity;
+    strcpy(autoPurchases[*autoPurchaseCount].couponCode, couponCode);
+    strcpy(autoPurchases[*autoPurchaseCount].purchaseDay, purchaseDay);
+    strcpy(autoPurchases[*autoPurchaseCount].lastPurchase, lastPurchase);
+    (*autoPurchaseCount)++;
 
+    saveAutoPurchases(autoPurchases, *autoPurchaseCount);
+    printf("Auto-purchase scheduled successfully!\n");
+}
 
-    FILE *file = fopen("./csv/autopurchase.csv", "a");
-    if (file == NULL) {
-        printf("Error opening autopurchase file!\n");
-        return;
+void removeAutoPurchase(struct AutoPurchase autoPurchases[], int *autoPurchaseCount) {
+    char productName[50];
+    int found = 0;
+
+    while (getchar() != '\n');
+    printf("Enter product name to remove: ");
+    fgets(productName, sizeof(productName), stdin);
+    productName[strcspn(productName, "\n")] = 0;
+
+    for (int i = 0; i < *autoPurchaseCount; i++) {
+        if (strcmp(autoPurchases[i].productName, productName) == 0) {
+            for (int j = i; j < *autoPurchaseCount - 1; j++) {
+                autoPurchases[j] = autoPurchases[j + 1];
+            }
+            (*autoPurchaseCount)--;
+            found = 1;
+            break;
+        }
     }
 
-    fprintf(file, "%s,%d,%s,%s,%s\n", productName, quantity, couponCode, purchaseDay, lastPurchase);
-    fclose(file);
+    if (found) {
+        printf("Auto-purchase schedule removed!\n");
+    } else {
+        printf("Product not found!\n");
+    }
 
-    printf("Auto-purchase scheduled successfully!\n");
+    saveAutoPurchases(autoPurchases, *autoPurchaseCount);
 }
 
 void performAutoPurchases(struct Product products[], int productCount, struct Coupon coupons[], int couponCount, struct AutoPurchase autoPurchases[], int autoPurchaseCount) {
@@ -133,7 +202,6 @@ void performAutoPurchases(struct Product products[], int productCount, struct Co
                     return;
                 }
 
-                // Apply coupon if available and valid for the purchase date
                 for (int k = 0; k < couponCount; k++) {
                     if (strcmp(coupons[k].code, couponCode) == 0) {
                         struct tm couponExpiryDate;
@@ -149,32 +217,15 @@ void performAutoPurchases(struct Product products[], int productCount, struct Co
                     printf("Coupon applied! Discount: %.2f%%\n", discount);
                 }
 
-                // Log the purchase
                 char purchaseDateStr[11];
                 strftime(purchaseDateStr, sizeof(purchaseDateStr), "%Y-%m-%d", &purchaseDate);
-                logPurchase(autoPurchases[i].productName, quantity, totalPrice, discount, couponCode);
-
-                // Update last purchase date
                 strcpy(autoPurchases[i].lastPurchase, purchaseDateStr);
 
+                logPurchase(autoPurchases[i].productName, quantity, totalPrice, discount, couponCode, purchaseDateStr);
                 printf("Auto-purchase for %s on %s completed successfully! Total price: %.2f\n", autoPurchases[i].productName, purchaseDateStr, totalPrice);
             }
         }
     }
 
-    // Save updated auto-purchase details
     saveAutoPurchases(autoPurchases, autoPurchaseCount);
-}
-
-void viewAutoPurchases(struct AutoPurchase autoPurchases[], int autoPurchaseCount) {
-    printf("\n=== Auto-Purchase Schedule ===\n");
-    printf("%-20s %-10s %-10s %-15s %-10s\n", "Product Name", "Quantity", "Coupon", "Purchase Day", "Last Purchase");
-    for (int i = 0; i < autoPurchaseCount; i++) {
-        printf("%-20s %-10d %-10s %-15s %-10s\n", 
-            autoPurchases[i].productName, 
-            autoPurchases[i].quantity, 
-            autoPurchases[i].couponCode, 
-            autoPurchases[i].purchaseDay, 
-            autoPurchases[i].lastPurchase);
-    }
 }

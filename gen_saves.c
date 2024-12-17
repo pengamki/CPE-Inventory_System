@@ -1,6 +1,16 @@
 #include "inventory.h"
 
-void saveProductsToCSV(struct Product products[], int productCount) {
+void saveUser(const char* username, const char* password, int isOwner) {
+    FILE *file = fopen("./csv/users.csv", "a");
+    if (file == NULL) {
+        printf("Error opening file!\n");
+        return;
+    }
+    fprintf(file, "%s,%s,%d\n", username, password, isOwner);
+    fclose(file);
+}
+
+void saveProducts(struct Product products[], int productCount) {
     FILE *file = fopen("./csv/products.csv", "w");
     if (file == NULL) {
         printf("Error opening products file!\n");
@@ -14,7 +24,7 @@ void saveProductsToCSV(struct Product products[], int productCount) {
     fclose(file);
 }
 
-void saveCouponsToCSV(struct Coupon coupons[], int couponCount) {
+void saveCoupons(struct Coupon coupons[], int couponCount) {
     FILE *file = fopen("./csv/coupons.csv", "w");
     if (file == NULL) {
         printf("Error opening file!\n");
@@ -24,6 +34,17 @@ void saveCouponsToCSV(struct Coupon coupons[], int couponCount) {
     for (int i = 0; i < couponCount; i++) {
         fprintf(file, "%s,%.2f,%s\n", coupons[i].code, coupons[i].discount, coupons[i].expiryDate);
     }
+    fclose(file);
+}
+
+void saveThreshold(int threshold) {
+    FILE *file = fopen("./csv/threshold.txt", "w");
+    if (file == NULL) {
+        printf("Error opening threshold file!\n");
+        return;
+    }
+
+    fprintf(file, "%d", threshold);
     fclose(file);
 }
 

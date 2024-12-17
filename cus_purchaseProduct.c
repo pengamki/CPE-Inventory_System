@@ -7,9 +7,25 @@ void purchaseProduct(struct Product products[], int productCount, struct Coupon 
     float totalPrice = 0.0;
     char couponCode[20];
     float discount = 0.0;
+    char purchaseTime[20];
 
+    while (getchar() != '\n');
     printf("Enter the product name: ");
-    scanf("%s", productName);
+    fgets(productName, sizeof(productName), stdin);
+    productName[strcspn(productName, "\n")] = 0;
+
+    for (int i = 0; i < productCount; i++) {
+        if (strcmp(products[i].name, productName) == 0) {
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Product not found!\n");
+        return;
+    }
+
     printf("Enter the quantity: ");
     scanf("%d", &quantity);
 
@@ -18,24 +34,6 @@ void purchaseProduct(struct Product products[], int productCount, struct Coupon 
         return;
     }
 
-    for (int i = 0; i < productCount; i++) {
-        if (strcmp(products[i].name, productName) == 0) {
-            if (products[i].stock >= quantity) {
-                totalPrice = products[i].price * quantity;
-                products[i].stock -= quantity;
-                found = 1;
-                break;
-            } else {
-                printf("Insufficient stock!\n");
-                return;
-            }
-        }
-    }
-
-    if (!found) {
-        printf("Product not found!\n");
-        return;
-    }
 
     while (getchar() != '\n');
     printf("Enter coupon code (or press enter to skip): ");
@@ -63,9 +61,24 @@ void purchaseProduct(struct Product products[], int productCount, struct Coupon 
         }
     }
 
-    logPurchase(productName, quantity, totalPrice, discount, couponCode);
-    sortProducts(products, productCount);
-    saveProductsToCSV(products, productCount);
+    for (int i = 0; i < productCount; i++) {
+        if (strcmp(products[i].name, productName) == 0) {
+            if (products[i].stock >= quantity) {
+                totalPrice = products[i].price * quantity;
+                products[i].stock -= quantity;
+                break;
+            } else {
+                printf("Insufficient stock for %s!\n", productName);
+                return;
+            }
+        }
+    }
 
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    strftime(purchaseTime, sizeof(purchaseTime), "%Y-%m-%d %H:%M:%S", t);
+
+    logPurchase(productName, quantity, totalPrice, discount, couponCode, purchaseTime);
+    saveProducts(products, productCount);
     printf("Purchase successful! Total price: %.2f\n", totalPrice);
 }

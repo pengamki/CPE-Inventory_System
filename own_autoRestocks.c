@@ -1,13 +1,13 @@
 #include "inventory.h"
 
-void setAutoRestock(struct Product products[], int productCount, struct AutoRestock autoRestocks[], int autoRestockCount) {
+void setAutoRestock(struct Product products[], int productCount, struct AutoRestock autoRestocks[], int *autoRestockCount) {
     int choice;
 
-    loadAutoRestocks(autoRestocks, &autoRestockCount);
     do {
         printf("\n=== Restock Products Menu ===\n");
         printf("1. View Auto-restock Schedule\n");
-        printf("2. Schedule Auto-restock\n");
+        printf("2. Add Auto-restock Schedule\n");
+        printf("3. Remove Auto-restock Schedule\n");
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -15,10 +15,13 @@ void setAutoRestock(struct Product products[], int productCount, struct AutoRest
         system("cls");
         switch(choice) {
             case 1:
-                viewAutoRestocks(autoRestocks, autoRestockCount);
+                viewAutoRestocks(autoRestocks, *autoRestockCount);
                 break;
             case 2:
-                autoRestock(products, productCount);
+                addAutoRestock(products, productCount, autoRestocks, autoRestockCount);
+                break;
+            case 3:
+                removeAutoRestock(autoRestocks, autoRestockCount);
                 break;
             case 0:
                 printf("Exiting...\n");
@@ -28,35 +31,31 @@ void setAutoRestock(struct Product products[], int productCount, struct AutoRest
                 break;
         }
     } while(choice != 0);
-
-    sortProducts(products, productCount);
-    saveProductsToCSV(products, productCount);
 }
 
-void autoRestock(struct Product products[], int productCount) {
+void viewAutoRestocks(struct AutoRestock autoRestocks[], int autoRestockCount) {
+    printf("\n=== Auto-Restock Schedule ===\n");
+    printf("%-20s %-10s %-10s %-15s\n", "Product Name", "Quantity", "Restock Day", "Last Restock");
+    for (int i = 0; i < autoRestockCount; i++) {
+        printf("%-20s %-10d %-10s %-15s\n", 
+            autoRestocks[i].productName, 
+            autoRestocks[i].quantity, 
+            autoRestocks[i].restockDay, 
+            autoRestocks[i].lastRestock);
+    }
+}
+
+void addAutoRestock(struct Product products[], int productCount, struct AutoRestock autoRestocks[], int *autoRestockCount) {
     char productName[50];
     int quantity;
     char restockDay[10];
     char lastRestock[11];
     int found = 0;
 
+    while (getchar() != '\n');
     printf("Enter the product name: ");
-    scanf("%s", productName);
-    printf("Enter the quantity: ");
-    scanf("%d", &quantity);
-    printf("Enter the restock day (e.g., Monday): ");
-    scanf("%s", restockDay);
-
-    // Validate restock day
-    if (!isValidDay(restockDay)) {
-        printf("Invalid restock day! Aborting process.\n");
-        return;
-    }
-
-    if (quantity <= 0) {
-        printf("Invalid quantity!\n");
-        return;
-    }
+    fgets(productName, sizeof(productName), stdin);
+    productName[strcspn(productName, "\n")] = 0;
 
     for (int i = 0; i < productCount; i++) {
         if (strcmp(products[i].name, productName) == 0) {
@@ -70,22 +69,63 @@ void autoRestock(struct Product products[], int productCount) {
         return;
     }
 
-    // Get the current date
+    printf("Enter the quantity: ");
+    scanf("%d", &quantity);
+
+    if (quantity <= 0) {
+        printf("Invalid quantity!\n");
+        return;
+    }
+
+    printf("Enter the restock day (e.g., Monday): ");
+    scanf("%s", restockDay);
+
+    if (!isValidDay(restockDay)) {
+        printf("Invalid restock day! Aborting process.\n");
+        return;
+    }
+
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     strftime(lastRestock, sizeof(lastRestock), "%Y-%m-%d", t);
 
-    // Save the auto-restock details to autorestock.csv
-    FILE *file = fopen("./csv/autorestock.csv", "a");
-    if (file == NULL) {
-        printf("Error opening autorestock file!\n");
-        return;
+    strcpy(autoRestocks[*autoRestockCount].productName, productName);
+    autoRestocks[*autoRestockCount].quantity = quantity;
+    strcpy(autoRestocks[*autoRestockCount].restockDay, restockDay);
+    strcpy(autoRestocks[*autoRestockCount].lastRestock, lastRestock);
+    (*autoRestockCount)++;
+
+    saveAutoRestocks(autoRestocks, *autoRestockCount);
+    printf("Auto-restock scheduled successfully!\n");
+}
+
+void removeAutoRestock(struct AutoRestock autoRestocks[], int *autoRestockCount) {
+    char productName[50];
+    int found = 0;
+
+    while (getchar() != '\n');
+    printf("Enter product name to remove: ");
+    fgets(productName, sizeof(productName), stdin);
+    productName[strcspn(productName, "\n")] = 0;
+
+    for (int i = 0; i < *autoRestockCount; i++) {
+        if (strcmp(autoRestocks[i].productName, productName) == 0) {
+            for (int j = i; j < *autoRestockCount - 1; j++) {
+                autoRestocks[j] = autoRestocks[j + 1];
+            }
+            (*autoRestockCount)--;
+            found = 1;
+            break;
+        }
     }
 
-    fprintf(file, "%s,%d,%s,%s\n", productName, quantity, restockDay, lastRestock);
-    fclose(file);
+    if (found) {
+        printf("Auto-restock schedule removed!\n");
+    } else {
+        printf("Product not found!\n");
+    }
 
-    printf("Auto-restock scheduled successfully!\n");
+    saveAutoRestocks(autoRestocks, *autoRestockCount);
 }
 
 void performAutoRestocks(struct Product products[], int productCount, struct AutoRestock autoRestocks[], int autoRestockCount) {
@@ -125,30 +165,15 @@ void performAutoRestocks(struct Product products[], int productCount, struct Aut
                     return;
                 }
 
-                // Log the restock
                 char restockDateStr[11];
                 strftime(restockDateStr, sizeof(restockDateStr), "%Y-%m-%d", &restockDate);
-                logRestock(products, productCount, autoRestocks[i].productName, quantity);
-
-                // Update last restock date
                 strcpy(autoRestocks[i].lastRestock, restockDateStr);
 
+                logRestock(autoRestocks[i].productName, quantity, restockDateStr);
                 printf("Auto-restock for %s on %s completed successfully! Quantity: %d\n", autoRestocks[i].productName, restockDateStr, quantity);
             }
         }
     }
 
-    // Save updated auto-restock details
     saveAutoRestocks(autoRestocks, autoRestockCount);
-}
-
-void viewAutoRestocks(struct AutoRestock autoRestocks[], int autoRestockCount) {
-    printf("\n=== Auto-Restock Schedules ===\n");
-    for (int i = 0; i < autoRestockCount; i++) {
-        printf("Product Name: %s\n", autoRestocks[i].productName);
-        printf("Quantity: %d\n", autoRestocks[i].quantity);
-        printf("Restock Day: %s\n", autoRestocks[i].restockDay);
-        printf("Last Restock: %s\n", autoRestocks[i].lastRestock);
-        printf("-----------------------------\n");
-    }
 }

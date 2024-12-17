@@ -1,9 +1,9 @@
 #include "inventory.h"
 
-void loadProductsFromCSV(struct Product products[], int *productCount) {
+void loadProducts(struct Product products[], int *productCount) {
     FILE *file = fopen("./csv/products.csv", "r");
     if (file == NULL) {
-        printf("Error opening file!\n");
+        printf("No products file found.\n");
         return;
     }
     
@@ -85,6 +85,17 @@ void loadCoupons(struct Coupon coupons[], int *couponCount) {
     fclose(file);
 }
 
+void loadThreshold(int *threshold) {
+    FILE *file = fopen("./csv/threshold.txt", "r");
+    if (file == NULL) {
+        printf("No threshold setted.\n");
+        return;
+    }
+
+    fscanf(file, "%d", threshold);
+    fclose(file);
+}
+
 void loadAutoPurchases(struct AutoPurchase autoPurchases[], int *autoPurchaseCount) {
     FILE *file = fopen("./csv/autopurchase.csv", "r");
     if (file == NULL) {
@@ -142,6 +153,67 @@ void loadAutoRestocks(struct AutoRestock autoRestocks[], int *autoRestockCount) 
         strcpy(autoRestocks[*autoRestockCount].lastRestock, token);
 
         (*autoRestockCount)++;
+    }
+    fclose(file);
+}
+
+void loadPurchaseLogs(struct PurchaseLog purchaseLogs[], int *purchaseLogCount) {
+    FILE *file = fopen("./csv/purchaselog.csv", "r");
+    if (file == NULL) {
+        printf("No purchase log file found.\n");
+        return;
+    }
+
+    char line[MAX_LINE];
+    *purchaseLogCount = 0;
+    while (fgets(line, MAX_LINE, file) && *purchaseLogCount < MAX_PURCHASELOGS) {
+        char *delim = ",\n";
+
+        char *token = strtok(line, delim);
+        strcpy(purchaseLogs[*purchaseLogCount].productName, token);
+
+        token = strtok(NULL, delim);
+        purchaseLogs[*purchaseLogCount].quantity = atoi(token);
+
+        token = strtok(NULL, delim);
+        strcpy(purchaseLogs[*purchaseLogCount].couponCode, token);
+
+        token = strtok(NULL, delim);
+        purchaseLogs[*purchaseLogCount].totalPrice = atof(token);
+
+        token = strtok(NULL, delim);
+        purchaseLogs[*purchaseLogCount].discount = atof(token);
+
+        token = strtok(NULL, delim);
+        strcpy(purchaseLogs[*purchaseLogCount].dateTime, token);
+
+        (*purchaseLogCount)++;
+    }
+    fclose(file);
+}
+
+void loadRestockLogs(struct RestockLog restockLogs[], int *restockLogCount) {
+    FILE *file = fopen("./csv/restocklog.csv", "r");
+    if (file == NULL) {
+        printf("No restock log file found.\n");
+        return;
+    }
+
+    char line[MAX_LINE];
+    *restockLogCount = 0;
+    while (fgets(line, MAX_LINE, file) && *restockLogCount < MAX_RESTOCKLOGS) {
+        char *delim = ",\n";
+
+        char *token = strtok(line, delim);
+        strcpy(restockLogs[*restockLogCount].productName, token);
+
+        token = strtok(NULL, delim);
+        restockLogs[*restockLogCount].quantity = atoi(token);
+
+        token = strtok(NULL, delim);
+        strcpy(restockLogs[*restockLogCount].dateTime, token);
+
+        (*restockLogCount)++;
     }
     fclose(file);
 }

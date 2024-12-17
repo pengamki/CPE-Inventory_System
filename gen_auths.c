@@ -11,12 +11,11 @@ int authenticateUser(struct User users[], int userCount, const char* username, c
     return 0;
 }
 
-void registerUser(const char* username, const char* password, int isOwner) {
-    FILE *file = fopen("./csv/users.csv", "a");
-    if (file == NULL) {
-        printf("Error opening file!\n");
-        return;
+int usernameExists(struct User users[], int userCount, const char* username) {
+    for (int i = 0; i < userCount; i++) {
+        if (strcmp(users[i].username, username) == 0) {
+            return 1;
+        }
     }
-    fprintf(file, "%s,%s,%d\n", username, password, isOwner);
-    fclose(file);
+    return 0;
 }

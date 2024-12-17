@@ -1,18 +1,18 @@
 #include "inventory.h"
 
 void viewProducts(struct Product products[], int productCount) {
-    int viewChoice;
-    
+    int choice;
+
     printf("\n1. View All Products\n");
     printf("2. View by Name\n");
     printf("3. View by Description\n");
     printf("4. View by Price\n");
     printf("0. Exit\n");
     printf("Enter your choice: ");
-    scanf("%d", &viewChoice);
+    scanf("%d", &choice);
 
     system("cls");
-    switch(viewChoice) {
+    switch(choice) {
         case 1:
             viewAllProducts(products, productCount);
             break;
@@ -48,8 +48,11 @@ void viewAllProducts(struct Product products[], int productCount) {
 
 void viewByName(struct Product products[], int productCount) {
     char searchName[50];
+
+    while (getchar() != '\n');
     printf("Enter product name to search: ");
-    scanf(" %[^\n]s", searchName);
+    fgets(searchName, sizeof(searchName), stdin);
+    searchName[strcspn(searchName, "\n")] = 0;
     
     printf("\n=== Search Results ===\n");
     printf("%-20s %-30s %-10s %-10s\n", "Name", "Description", "Price", "Stock");
@@ -66,8 +69,11 @@ void viewByName(struct Product products[], int productCount) {
 
 void viewByDescription(struct Product products[], int productCount) {
     char searchDesc[100];
+
+    while (getchar() != '\n');
     printf("Enter description keyword to search: ");
-    scanf(" %[^\n]s", searchDesc);
+    fgets(searchDesc, sizeof(searchDesc), stdin);
+    searchDesc[strcspn(searchDesc, "\n")] = 0;
     
     printf("\n=== Search Results ===\n");
     printf("%-20s %-30s %-10s %-10s\n", "Name", "Description", "Price", "Stock");
@@ -85,6 +91,7 @@ void viewByDescription(struct Product products[], int productCount) {
 void viewByPrice(struct Product products[], int productCount) {
     float minPrice;
     float maxPrice;
+
     printf("Enter minimum price to search: ");
     scanf("%f", &minPrice);
     printf("Enter maximum price to search: ");

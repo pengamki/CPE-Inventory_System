@@ -1,6 +1,6 @@
 #include "inventory.h"
 
-void editProducts(struct Product products[], int productCount) {
+void editProducts(struct Product products[], int *productCount) {
     int choice;
 
     do {
@@ -8,7 +8,7 @@ void editProducts(struct Product products[], int productCount) {
         printf("1. View Products\n");
         printf("2. Add Product\n");
         printf("3. Remove Product\n");
-        printf("4. Edit Product\n");
+        printf("4. Update Product\n");
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -16,16 +16,16 @@ void editProducts(struct Product products[], int productCount) {
         system("cls");
         switch(choice) {
             case 1:
-                viewAllProducts(products, productCount);
+                viewAllProducts(products, *productCount);
                 break;
             case 2:
-                addProduct(products, &productCount);
+                addProduct(products, productCount);
                 break;
             case 3:
-                removeProduct(products, &productCount);
+                removeProduct(products, productCount);
                 break;
             case 4:
-                editProduct(products, productCount);
+                updateProduct(products, *productCount);
                 break;
             case 0:
                 printf("Exiting...\n");
@@ -35,9 +35,6 @@ void editProducts(struct Product products[], int productCount) {
                 break;
         }
     } while(choice != 0);
-
-    sortProducts(products, productCount);
-    saveProductsToCSV(products, productCount);
 }
 
 void addProduct(struct Product products[], int *productCount) {
@@ -51,18 +48,41 @@ void addProduct(struct Product products[], int *productCount) {
     fgets(name, sizeof(name), stdin);
     name[strcspn(name, "\n")] = 0;
 
+    for (int i = 0; i < *productCount; i++) {
+        if (strcmp(products[i].name, name) == 0) {
+            printf("Product already exists!\n");
+            return;
+        }
+    }
+
+    if (strlen(name) == 0) {
+        printf("Invalid product name!\n");
+        return;
+    }
+
+    while (getchar() != '\n');
     printf("Enter product description: ");
     fgets(description, sizeof(description), stdin);
     description[strcspn(description, "\n")] = 0;
 
+    if (strlen(description) == 0) {
+        printf("Invalid product description!\n");
+        return;
+    }
+
     printf("Enter product price: ");
     scanf("%f", &price);
+
+    if (price < 0) {
+        printf("Invalid price!\n");
+        return;
+    }
 
     printf("Enter product stock: ");
     scanf("%d", &stock);
 
-    if (price < 0 || stock < 0) {
-        printf("Invalid price or stock!\n");
+    if (stock < 0) {
+        printf("Invalid stock!\n");
         return;
     }
 
@@ -73,7 +93,7 @@ void addProduct(struct Product products[], int *productCount) {
     (*productCount)++;
 
     sortProducts(products, *productCount);
-    saveProductsToCSV(products, *productCount);
+    saveProducts(products, *productCount);
     printf("Product added!\n");
 }
 
@@ -102,9 +122,12 @@ void removeProduct(struct Product products[], int *productCount) {
     } else {
         printf("Product not found!\n");
     }
+
+    sortProducts(products, *productCount);
+    saveProducts(products, *productCount);
 }
 
-void editProduct(struct Product products[], int productCount) {
+void updateProduct(struct Product products[], int productCount) {
     char productName[50];
     char newProductName[50];
     char newDescription[100];
@@ -112,8 +135,10 @@ void editProduct(struct Product products[], int productCount) {
     int newStock;
     int pos = -1;
 
-    printf("Enter the product name to edit: ");
-    scanf("%s", productName);
+    while (getchar() != '\n');
+    printf("Enter the product name to update: ");
+    fgets(productName, sizeof(productName), stdin);
+    productName[strcspn(productName, "\n")] = 0;
 
     for (int i = 0; i < productCount; i++) {
         if (strcmp(products[i].name, productName) == 0) {
@@ -122,36 +147,51 @@ void editProduct(struct Product products[], int productCount) {
         }
     }
 
-    if (pos == -1) {
+    if (pos < 0) {
         printf("Product not found!\n");
         return;
     }
 
+    while (getchar() != '\n');
     printf("Enter new product name: ");
-    scanf("%s", newProductName);
+    fgets(newProductName, sizeof(newProductName), stdin);
+    newProductName[strcspn(newProductName, "\n")] = 0;
+
     if (strlen(newProductName) == 0) {
         printf("Invalid product name!\n");
         return;
     }
 
+    for (int i = 0; i < productCount; i++) {
+        if (strcmp(products[i].name, newProductName) == 0) {
+            printf("Product already exists!\n");
+            return;
+        }
+    }
+
+    while (getchar() != '\n');
     printf("Enter new product description: ");
-    scanf(" %[^\n]", newDescription);
+    fgets(newDescription, sizeof(newDescription), stdin);
+    newDescription[strcspn(newDescription, "\n")] = 0;
+
     if (strlen(newDescription) == 0) {
         printf("Invalid product description!\n");
         return;
     }
 
     printf("Enter new product price: ");
-    if (scanf("%f", &newPrice) != 1 || newPrice < 0) {
+    scanf("%f", &newPrice);
+
+    if (newPrice < 0) {
         printf("Invalid product price!\n");
-        while (getchar() != '\n');
         return;
     }
 
     printf("Enter new product stock: ");
-    if (scanf("%d", &newStock) != 1 || newStock < 0) {
+    scanf("%d", &newStock);
+
+    if (newStock < 0) {
         printf("Invalid product stock!\n");
-        while (getchar() != '\n');
         return;
     }
 
@@ -161,7 +201,6 @@ void editProduct(struct Product products[], int productCount) {
     products[pos].stock = newStock;
 
     sortProducts(products, productCount);
-    saveProductsToCSV(products, productCount);
-
+    saveProducts(products, productCount);
     printf("Product updated successfully!\n");
 }

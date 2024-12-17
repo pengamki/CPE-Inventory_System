@@ -24,13 +24,13 @@ int isDayOfWeek(const char* day, struct tm *date) {
 
 int custom_strptime(const char *date_str, struct tm *tm) {
     if (sscanf(date_str, "%d-%d-%d", &tm->tm_year, &tm->tm_mon, &tm->tm_mday) != 3) {
-        return 0; // Parsing failed
+        return 0;
     }
-    tm->tm_year -= 1900; // Adjust year
-    tm->tm_mon -= 1;     // Adjust month
+    tm->tm_year -= 1900;
+    tm->tm_mon -= 1;
     tm->tm_hour = 0;
     tm->tm_min = 0;
     tm->tm_sec = 0;
-    tm->tm_isdst = -1;   // Not set by strptime
-    return 1; // Parsing successful
+    tm->tm_isdst = -1;
+    return 1;
 }

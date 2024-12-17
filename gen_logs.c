@@ -1,27 +1,23 @@
 #include "inventory.h"
 
-void logPurchase(char* productName, int quantity, float totalPrice, float discount, char* couponCode) {
+void logPurchase(const char* productName, int quantity, float totalPrice, float discount, const char* couponCode, const char* purchaseTime) {
     FILE *file = fopen("./csv/purchaselog.csv", "a");
     if (file == NULL) {
         printf("Error opening log file!\n");
         return;
     }
 
-    if (strlen(couponCode) == 0) {
-        fprintf(file, "%s,%d,%.2f,%.2f\n", productName, quantity, totalPrice, discount);
-    } else {
-        fprintf(file, "%s,%d,%.2f,%.2f,%s\n", productName, quantity, totalPrice, discount, couponCode);
-    }
+    fprintf(file, "%s,%d,%s,%.2f,%.2f,%s\n", productName, quantity, couponCode, discount, totalPrice, purchaseTime);
     fclose(file);
 }
 
-void logRestock(struct Product products[], int productCount, char* productName, int quantity) {
+void logRestock(const char* productName, int quantity, const char* restockTime) {
     FILE *file = fopen("./csv/restocklog.csv", "a");
     if (file == NULL) {
         printf("Error opening log file!\n");
         return;
     }
 
-    fprintf(file, "%s,%d\n", productName, quantity);
+    fprintf(file, "%s,%d,%s\n", productName, quantity, restockTime);
     fclose(file);
 }
