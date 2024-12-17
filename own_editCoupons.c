@@ -52,6 +52,11 @@ void addCoupon(struct Coupon coupons[], int *couponCount) {
     fgets(code, sizeof(code), stdin);
     code[strcspn(code, "\n")] = 0;
 
+    if (strlen(code) == 0 || strcmp(code, "N/A") == 0) {
+        printf("Invalid coupon code!\n");
+        return;
+    }
+
     printf("Enter discount percentage: ");
     scanf("%f", &discount);
 

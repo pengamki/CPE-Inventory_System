@@ -42,6 +42,7 @@ void purchaseProduct(struct Product products[], int productCount, struct Coupon 
 
     if (strlen(couponCode) == 0) {
         printf("No coupon applied.\n");
+        strcpy(couponCode, "N/A");
     } else {
         for (int i = 0; i < couponCount; i++) {
             if (strcmp(coupons[i].code, couponCode) == 0) {

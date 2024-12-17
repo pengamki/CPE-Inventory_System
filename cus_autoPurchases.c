@@ -86,6 +86,7 @@ void addAutoPurchase(struct Product products[], int productCount, struct Coupon 
 
     if (strlen(couponCode) == 0) {
         printf("No coupon applied.\n");
+        strcpy(couponCode, "N/A");
     } else {
         int couponFound = 0;
         for (int i = 0; i < couponCount; i++) {
@@ -201,7 +202,7 @@ void performAutoPurchases(struct Product products[], int productCount, struct Co
                     printf("Product %s not found!\n", autoPurchases[i].productName);
                     return;
                 }
-
+                
                 for (int k = 0; k < couponCount; k++) {
                     if (strcmp(coupons[k].code, couponCode) == 0) {
                         struct tm couponExpiryDate;

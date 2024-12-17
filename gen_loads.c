@@ -157,13 +157,13 @@ void loadAutoRestocks(struct AutoRestock autoRestocks[], int *autoRestockCount) 
     fclose(file);
 }
 
-void loadPurchaseLogs(struct PurchaseLog purchaseLogs[], int *purchaseLogCount) {
+void loadPurchaseLogs(struct PurchaseLog purchaseLogs[], int *purchaseLogCount) { 
     FILE *file = fopen("./csv/purchaselog.csv", "r");
     if (file == NULL) {
         printf("No purchase log file found.\n");
         return;
     }
-
+ 
     char line[MAX_LINE];
     *purchaseLogCount = 0;
     while (fgets(line, MAX_LINE, file) && *purchaseLogCount < MAX_PURCHASELOGS) {
@@ -179,10 +179,10 @@ void loadPurchaseLogs(struct PurchaseLog purchaseLogs[], int *purchaseLogCount) 
         strcpy(purchaseLogs[*purchaseLogCount].couponCode, token);
 
         token = strtok(NULL, delim);
-        purchaseLogs[*purchaseLogCount].totalPrice = atof(token);
+        purchaseLogs[*purchaseLogCount].discount = atof(token);
 
         token = strtok(NULL, delim);
-        purchaseLogs[*purchaseLogCount].discount = atof(token);
+        purchaseLogs[*purchaseLogCount].totalPrice = atof(token);
 
         token = strtok(NULL, delim);
         strcpy(purchaseLogs[*purchaseLogCount].dateTime, token);

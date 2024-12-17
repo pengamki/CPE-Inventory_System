@@ -73,3 +73,14 @@ void saveAutoRestocks(struct AutoRestock autoRestocks[], int autoRestockCount) {
     }
     fclose(file);
 }
+
+void saveReportSummary(const char* date, int totalSales, float totalIncome, const char* mostSoldProduct, int mostSoldQuantity, const char* leastSoldProduct, int leastSoldQuantity) {
+    FILE *file = fopen("./csv/reports.csv", "a");
+    if (file == NULL) {
+        printf("Error opening reports file!\n");
+        return;
+    }
+
+    fprintf(file, "%s,%d,%.2f,%s,%d,%s,%d\n", date, totalSales, totalIncome, mostSoldProduct, mostSoldQuantity, leastSoldProduct, leastSoldQuantity);
+    fclose(file);
+}
