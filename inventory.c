@@ -50,10 +50,6 @@ int main() {
     loadThreshold(&threshold);
     loadAutoPurchases(autoPurchases, &autoPurchaseCount);
     loadAutoRestocks(autoRestocks, &autoRestockCount);
-    // sortProducts(products, productCount);
-    // sortCoupons(coupons, couponCount);
-    // saveProducts(products, productCount);
-    // saveCoupons(coupons, couponCount);
     performAutoPurchases(products, productCount, coupons, couponCount, autoPurchases, autoPurchaseCount);
     performAutoRestocks(products, productCount, autoRestocks, autoRestockCount);
     while(1) {
