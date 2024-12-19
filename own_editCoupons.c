@@ -57,6 +57,13 @@ void addCoupon(struct Coupon coupons[], int *couponCount) {
         return;
     }
 
+    for (int i = 0; i < *couponCount; i++) {
+        if (strcmp(coupons[i].code, code) == 0) {
+            printf("Code already exist!");
+            return;
+        }
+    }    
+
     printf("Enter discount percentage: ");
     scanf("%f", &discount);
 

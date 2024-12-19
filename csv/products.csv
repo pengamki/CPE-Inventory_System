@@ -1,16 +1,20 @@
-TEST SORT,AAAAAA,1.00,2
-OT001,Bag,56.00,10
-DEF,Conditioner,5.99,30
-TSA,Hairbrush,69.00,19
-Logitech,Mouse,20.00,20
-AAA,Razor Blade,25.00,20
-ABC,Shampoo,10.00,70
-ABE,Shampoo,20.00,20
-PQR,Shaving Cream,4.99,60
-STU,Shaving Razor,6.99,80
-GHI,Soap,2.99,30
-MNO,Toothbrush,1.99,45
-BBC,Toothbrush,20.00,19
-BBB,Toothpaste,17.50,16
-JKL,Toothpaste,3.99,50
-TEST SPACE,spacenotavaiyet,0.00,1
+Rice,1 Gallon of Milk,3.50,93
+Pasta,1 lb Bag of Pasta,1.50,170
+Rice,5 lb Bag of Rice,4.00,85
+Egg,An egg,0.30,20
+Chicken Breast,Boneless Chicken Breast,5.00,80
+Cheese,Cheddar Cheese,4.00,50
+Broccoli,Fresh Broccoli,1.20,100
+Carrot,Fresh Carrot,0.70,280
+Apple,Fresh Red Apple,0.50,190
+Tomato,Fresh Tomato,0.80,220
+Yogurt,Greek Yogurt,1.00,200
+Tea,Green Tea,5.00,120
+Coffee,Ground Coffee,8.00,80
+Potato,Juicy Orange,0.60,239
+Juice,Orange Juice,2.50,100
+Milk,Organic Banana,0.30,245
+Potato,Organic Potato,0.40,193
+Butter,Unsalted Butter,3.00,70
+Cereal,Whole Grain Cereal,3.00,140
+Bread,Whole Wheat Bread,2.00,110

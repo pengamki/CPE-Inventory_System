@@ -91,8 +91,7 @@ void saveCoupons(struct Coupon coupons[], int couponCount);
 void saveThreshold(int threshold);
 void saveAutoPurchases(struct AutoPurchase autoPurchases[], int autoPurchaseCount);
 void saveAutoRestocks(struct AutoRestock autoRestocks[], int autoRestockCount);
-void saveReportSummary(const char* date, int totalSales, float totalIncome, const char* mostSoldProduct, int mostSoldQuantity, const char* leastSoldProduct, int leastSoldQuantity);
-// Logging functions
+void logReportSummary(const char* date, int totalSales, float totalIncome, const char* mostSoldProduct, int mostSoldQuantity, const char* leastSoldProduct, int leastSoldQuantity);
 void logRestock(const char* productName, int quantity, const char* restockTime);
 void logPurchase(const char* productName, int quantity, float totalPrice, float discount, const char* couponCode, const char* purchaseTime);
 // Sorting functions
@@ -128,12 +127,10 @@ void performAutoPurchases(struct Product products[], int productCount, struct Co
 // !!Owner functions!!
 // View Reports
 void viewReports(struct Product products[], int productCount); // Parent function
-void viewDailySummaryReport(struct PurchaseLog purchaseLogs[], int purchaseLogCount, struct Product products[]);
-void viewPurchasesReport(struct PurchaseLog purchaseLogs[], int purchaseLogCount);
-void viewStocksReport(struct Product products[], int productCount);
 void viewSalesReport(struct PurchaseLog purchaseLogs[], int purchaseLogCount);
 void filterSalesByProductName(struct PurchaseLog purchaseLogs[], int purchaseLogCount);
 void filterSalesByPriceRange(struct PurchaseLog purchaseLogs[], int purchaseLogCount);
+void viewDailySummaryReport(struct PurchaseLog purchaseLogs[], int purchaseLogCount, struct Product products[]);
 // Edit Products
 void editProducts(struct Product products[], int *productCount); // Parent function
 void addProduct(struct Product products[], int *productCount);
@@ -144,6 +141,7 @@ void restockProducts(struct Product products[], int productCount, int *threshold
 void restockProduct(struct Product products[], int productCount);
 void setTreshold(int *threshold);
 void belowThreshold(struct Product products[], int productCount, int threshold);
+void restockWithFile(struct Product products[], int productCount);
 // Restock : Auto Restock
 void setAutoRestock(struct Product products[], int productCount, struct AutoRestock autoRestocks[], int *autoRestockCount); // Parent function
 void viewAutoRestocks(struct AutoRestock autoRestocks[], int autoRestockCount);

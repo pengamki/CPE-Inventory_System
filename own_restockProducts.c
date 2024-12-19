@@ -10,6 +10,7 @@ void restockProducts(struct Product products[], int productCount, int *threshold
         printf("1. View Products\n");
         printf("2. Restock Product\n");
         printf("3. Set Restock Threshold\n");
+        printf("4. Restock product with file\n");
         printf("0. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -24,6 +25,10 @@ void restockProducts(struct Product products[], int productCount, int *threshold
                 break;
             case 3:
                 setTreshold(threshold);
+                break;
+            case 4:
+                restockWithFile(products, productCount);
+                break;
             case 0:
                 printf("Exiting...\n");
                 break;
@@ -83,6 +88,7 @@ void restockProduct(struct Product products[], int productCount) {
 
 void setTreshold(int *threshold) {
     printf("Enter the restock threshold: ");
+    
     scanf("%d", threshold);
 
     if (*threshold < 0) {
@@ -120,4 +126,69 @@ void belowThreshold(struct Product products[], int productCount, int threshold) 
                 products[i].stock);
         }
     }
+}
+
+void restockWithFile(struct Product products[], int productCount) {
+    FILE *file;
+    char filename[50];
+    char line[MAX_LINE];
+    char *token;
+    char productName[50];
+    int quantity;
+    int found = 0;
+    char restockTime[20];
+
+    while (getchar() != '\n');
+    printf("Enter the filename: ");
+    fgets(filename, sizeof(filename), stdin);
+    filename[strcspn(filename, "\n")] = 0;
+
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("File not found!\n");
+        return;
+    }
+
+    while (fgets(line, sizeof(line), file)) {
+        token = strtok(line, ",");
+        strcpy(productName, token);
+
+        token = strtok(NULL, ",");
+        quantity = atoi(token);
+
+        for (int i = 0; i < productCount; i++) {
+            if (strcmp(products[i].name, productName) == 0) {
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found) {
+            printf("Product: %-14s not found!\n", productName);
+            continue;
+        }
+
+        if (quantity <= 0) {
+            printf("Product: %-14s Invalid quantity: %d\n", productName, quantity);
+            continue;
+        }
+
+        for (int i = 0; i < productCount; i++) {
+            if (strcmp(products[i].name, productName) == 0) {
+                products[i].stock += quantity;
+                printf("Product: %-14s Restocked: %d\n", productName, quantity);
+                break;
+            }
+        }
+
+        time_t now = time(NULL);
+        struct tm *t = localtime(&now);
+        strftime(restockTime, sizeof(restockTime), "%Y-%m-%d %H:%M:%S", t);
+
+        logRestock(productName, quantity, restockTime);
+    }
+
+    fclose(file);
+    saveProducts(products, productCount);
+    printf("Restock successful!\n");
 }

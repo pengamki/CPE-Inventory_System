@@ -16,16 +16,16 @@ void editProducts(struct Product products[], int *productCount) {
         system("cls");
         switch(choice) {
             case 1:
-                viewAllProducts(products, *productCount);
+                viewAllProducts(products, *productCount); // Read
                 break;
             case 2:
-                addProduct(products, productCount);
+                addProduct(products, productCount); // Create
                 break;
             case 3:
-                removeProduct(products, productCount);
+                removeProduct(products, productCount); // Delete
                 break;
             case 4:
-                updateProduct(products, *productCount);
+                updateProduct(products, *productCount); // Update
                 break;
             case 0:
                 printf("Exiting...\n");

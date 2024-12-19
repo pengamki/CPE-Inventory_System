@@ -12,7 +12,7 @@ void viewReports(struct Product products[], int productCount) {
     loadRestockLogs(restockLogs, &restockLogCount);
     do {
         printf("\n=== Reports Menu ===\n");
-        printf("1. View Purchases Report\n");
+        printf("1. View Sales Report\n");
         printf("2. Filter Sales by Product Name\n");
         printf("3. Filter Sales by Price Range\n");
         printf("4. Summarize Today's Report\n");
@@ -46,9 +46,10 @@ void viewReports(struct Product products[], int productCount) {
 
 void viewSalesReport(struct PurchaseLog purchaseLogs[], int purchaseLogCount) {
     printf("\n=== Sales Report ===\n");
-    printf("%-20s %-10s %-10s %-10s %-10s\n", "Product", "Quantity", "Total Price", "Discount", "Coupon Code");
     for (int i = 0; i < purchaseLogCount; i++) {
-        printf("%-20s %-10d $%-9.2f %-10.2f %-10s\n", purchaseLogs[i].productName, purchaseLogs[i].quantity, purchaseLogs[i].totalPrice, purchaseLogs[i].discount, purchaseLogs[i].couponCode);
+        printf("Date: %s, Product: %s, Quantity: %d, Total Price: %.2f, Discount: %.2f, Coupon Code: %s\n",
+                   purchaseLogs[i].dateTime, purchaseLogs[i].productName, purchaseLogs[i].quantity,
+                   purchaseLogs[i].totalPrice, purchaseLogs[i].discount, purchaseLogs[i].couponCode);
     }
 }
 
@@ -63,9 +64,9 @@ void filterSalesByProductName(struct PurchaseLog purchaseLogs[], int purchaseLog
     printf("\n=== Sales for Product: %s ===\n", productName);
     for (int i = 0; i < purchaseLogCount; i++) {
         if (strcmp(purchaseLogs[i].productName, productName) == 0) {
-            printf("Date: %s, Quantity: %d, Total Price: %.2f, Discount: %.2f, Coupon Code: %s\n",
-                   purchaseLogs[i].dateTime, purchaseLogs[i].quantity, purchaseLogs[i].totalPrice,
-                   purchaseLogs[i].discount, purchaseLogs[i].couponCode);
+            printf("Date: %s, Product: %s, Quantity: %d, Total Price: %.2f, Discount: %.2f, Coupon Code: %s\n",
+                   purchaseLogs[i].dateTime, purchaseLogs[i].productName, purchaseLogs[i].quantity,
+                   purchaseLogs[i].totalPrice, purchaseLogs[i].discount, purchaseLogs[i].couponCode);
         }
     }
 }
@@ -97,6 +98,7 @@ void viewDailySummaryReport(struct PurchaseLog purchaseLogs[], int purchaseLogCo
     int productSales[MAX_PRODUCTS] = {0};
     float productIncome[MAX_PRODUCTS] = {0.0};
     int productCount = 0;
+    int _found = 0;
 
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
@@ -108,6 +110,7 @@ void viewDailySummaryReport(struct PurchaseLog purchaseLogs[], int purchaseLogCo
             totalSales += purchaseLogs[i].quantity;
             totalIncome += purchaseLogs[i].totalPrice;
 
+            _found = 1;
             int found = 0;
             for (int j = 0; j < productCount; j++) {
                 if (strcmp(purchaseLogs[i].productName, products[j].name) == 0) {
@@ -124,6 +127,11 @@ void viewDailySummaryReport(struct PurchaseLog purchaseLogs[], int purchaseLogCo
                 productCount++;
             }
         }
+    }
+
+    if (!_found) {
+        printf("No today's purchase found.");
+        return;
     }
 
     for (int i = 0; i < productCount; i++) {
@@ -144,5 +152,5 @@ void viewDailySummaryReport(struct PurchaseLog purchaseLogs[], int purchaseLogCo
     printf("Least Sold Product: %s (%d units)\n", leastSoldProduct, leastSoldQuantity);
     printf("Average Sales per Product: %.2f\n", (float)totalSales / productCount);
 
-    saveReportSummary(today, totalSales, totalIncome, mostSoldProduct, mostSoldQuantity, leastSoldProduct, leastSoldQuantity);
+    logReportSummary(today, totalSales, totalIncome, mostSoldProduct, mostSoldQuantity, leastSoldProduct, leastSoldQuantity);
 }
